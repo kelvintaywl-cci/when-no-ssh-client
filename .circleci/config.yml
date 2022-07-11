@@ -14,7 +14,7 @@ jobs:
       - run:
           name: check SSH
           command: |
-            (which ssh && ssh -V) || echo "no OpenSSH client on this Docker image, so CircleCI will fall back on the SSH client available on build-agent."
+            (which ssh && ssh -V && ssh -Q key) || echo "no OpenSSH client on this Docker image, so CircleCI will fall back on the SSH client available on build-agent."
       - run:
           name: check git
           command: |
