@@ -31,4 +31,5 @@ workflows:
                 - buildpack-deps:latest
                 - circleci/buildpack-deps:latest
                 - cimg/base:stable
+                - alpine:latest
  
