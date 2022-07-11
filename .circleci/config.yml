@@ -20,6 +20,22 @@ jobs:
           command: |
             (which git && git --version) || echo "no Git client this Docker image, so CircleCI will fall back on the git client available on build-agent."       
       - checkout
+      - run:
+          command: ls -lR ~/.ssh
+          when: always
+      - run:
+          command: apt update && apt install -y git openssh-client
+          when: always
+      - run:
+          command: ssh-keygen -l -E SHA256 -f ~/.ssh/id_rsa # Assuming it's always there
+          when: always
+      - run:
+          command: |
+            ssh -nT "$(awk -F: '{ print $1 }' \<<<"${CIRCLE_REPOSITORY_URL}")"
+          when: always
+      - run:
+          command: git clone "${CIRCLE_REPOSITORY_URL}"
+          when: always
 
 workflows:
   checkout-investigation:
@@ -29,7 +45,7 @@ workflows:
             parameters:
               img:
                 - buildpack-deps:latest
-                - circleci/buildpack-deps:latest
-                - cimg/base:stable
+#                 - circleci/buildpack-deps:latest
+#                 - cimg/base:stable
                 - alpine:latest
  
