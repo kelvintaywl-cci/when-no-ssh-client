@@ -10,9 +10,7 @@ jobs:
       - image: << parameters.img >>
     resource_class: small
     steps:
-      - run:
-          name: Start: check required tools for checkout
-          command: echo "will inspect SSH and Git, since both are needed for checkout step."
+      # will inspect SSH and Git, since both are needed for checkout step.
       - run:
           name: check SSH
           command: |
