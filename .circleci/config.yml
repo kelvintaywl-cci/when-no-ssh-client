@@ -19,7 +19,8 @@ jobs:
           name: check git
           command: |
             (which git && git --version) || echo "no Git client this Docker image, so CircleCI will fall back on the git client available on build-agent."       
-    
+      - checkout
+
 workflows:
   checkout-investigation:
     jobs:
