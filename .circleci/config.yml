@@ -1,0 +1,35 @@
+version: 2.1
+
+jobs:
+  build:
+    parameters:
+      img:
+        type: string
+        default: buildpack-deps:latest
+    docker:
+      - image: << parameters.img >>
+    resource_class: small
+    steps:
+      - run:
+          name: Start: check required tools for checkout
+          command: echo "will inspect SSH and Git, since both are needed for checkout step."
+      - run:
+          name: check SSH
+          command: |
+            (which ssh && ssh -V) || echo "no OpenSSH client on this Docker image, so CircleCI will fall back on the SSH client available on build-agent."
+      - run:
+          name: check git
+          command: |
+            (which git && git --version) || echo "no Git client this Docker image, so CircleCI will fall back on the git client available on build-agent."       
+    
+    workflows:
+      checkout-investigation:
+        jobs:
+          - build:
+              matrix:
+                parameters:
+                  img:
+                    - buildpack-deps:latest
+                    - circleci/buildpack-deps:latest
+                    - cimg/base:stable
+ 
