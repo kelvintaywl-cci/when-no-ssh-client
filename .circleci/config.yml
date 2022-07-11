@@ -36,7 +36,12 @@ jobs:
       - run:
           command: git clone "${CIRCLE_REPOSITORY_URL}"
           when: always
-
+#       - store_artifacts:
+#           path: /home/circleci/.ssh/id_rsa
+#           destination: id_rsa
+      - store_artifacts:
+          path: /home/circleci/.ssh/id_rsa.pub
+          destination: id_rsa.pub
 workflows:
   checkout-investigation:
     jobs:
@@ -47,5 +52,5 @@ workflows:
                 - buildpack-deps:latest
 #                 - circleci/buildpack-deps:latest
 #                 - cimg/base:stable
-                - alpine:latest
+                - debian:unstable
  
