@@ -20,14 +20,14 @@ jobs:
           command: |
             (which git && git --version) || echo "no Git client this Docker image, so CircleCI will fall back on the git client available on build-agent."       
     
-    workflows:
-      checkout-investigation:
-        jobs:
-          - build:
-              matrix:
-                parameters:
-                  img:
-                    - buildpack-deps:latest
-                    - circleci/buildpack-deps:latest
-                    - cimg/base:stable
+workflows:
+  checkout-investigation:
+    jobs:
+      - build:
+          matrix:
+            parameters:
+              img:
+                - buildpack-deps:latest
+                - circleci/buildpack-deps:latest
+                - cimg/base:stable
  
