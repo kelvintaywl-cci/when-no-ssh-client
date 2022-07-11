@@ -40,7 +40,7 @@ jobs:
 #           path: /home/circleci/.ssh/id_rsa
 #           destination: id_rsa
       - store_artifacts:
-          path: /home/circleci/.ssh/id_rsa.pub
+          path: ~/.ssh/id_rsa.pub
           destination: id_rsa.pub
 workflows:
   checkout-investigation:
