@@ -2,34 +2,23 @@ version: 2.1
 
 jobs:
   build:
-    parameters:
-      img:
-        type: string
-        default: buildpack-deps:latest
     docker:
-      - image: << parameters.img >>
-    resource_class: small
+      - image: archlinux # This should not contain OpenSSH
+    resource_class: medium
     steps:
-      # will inspect SSH and Git, since both are needed for checkout step.
+      - checkout # This should fail
       - run:
-          name: check SSH
+          name: Instal OpenSSH
           command: |
-            (which ssh && ssh -V && ssh -Q key) || echo "no OpenSSH client on this Docker image, so CircleCI will fall back on the SSH client available on build-agent."
+            pacman -Syu --noconfirm git openssh go
+          when: always
       - run:
-          name: check git
+          name: /bin/git clone
           command: |
-            (which git && git --version) || echo "no Git client this Docker image, so CircleCI will fall back on the git client available on build-agent."       
-      - checkout
-
-workflows:
-  checkout-investigation:
-    jobs:
-      - build:
-          matrix:
-            parameters:
-              img:
-                - buildpack-deps:latest
-                - circleci/buildpack-deps:latest
-                - cimg/base:stable
-                - alpine:latest
- 
+            export GIT_SSH_COMMAND="ssh -vvvv -o PubkeyAcceptedAlgorithms=rsa-sha2-256"
+            /bin/git clone "${CIRCLE_REPOSITORY_URL}" trunk
+          when: always
+      - run:
+          command: go run main.go "${CIRCLE_REPOSITORY_URL}" "$(mktemp -u -p .)" ~/.ssh/id_rsa
+          working_directory: trunk
+          when: always
