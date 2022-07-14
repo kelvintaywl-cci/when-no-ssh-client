@@ -5,7 +5,6 @@ parameters:
     type: string
     default: ''
 
-
 commands:
   set-repo-name-env-var:
     steps:
