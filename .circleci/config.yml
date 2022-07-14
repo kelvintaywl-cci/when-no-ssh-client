@@ -1,25 +1,38 @@
 version: 2.1
 
+parameters:
+  repo_name:
+    type: string
+    default: ''
+
+
+commands:
+  set-repo-name-env-var:
+    steps:
+      - run:
+          name: set REPO_NAME
+          command: |
+            if [ -n "<< pipeline.parameters.repo_name >>" ]; then
+              echo "export REPO_NAME='<< pipeline.parameters.repo_name >>'" >> $BASH_ENV
+            else
+              echo "export REPO_NAME='$CIRCLE_PROJECT_REPONAME'" >> $BASH_ENV              
+            fi
+          when: always
+
 jobs:
   build:
     parameters:
       img:
         type: string
-        default: buildpack-deps:latest
     docker:
       - image: << parameters.img >>
     resource_class: small
     steps:
-      # will inspect SSH and Git, since both are needed for checkout step.
+      - set-repo-name-env-var
       - run:
-          name: check SSH
+          name: print name (<< pipeline.parameters.repo_name >>)
           command: |
-            (which ssh && ssh -V && ssh -Q key) || echo "no OpenSSH client on this Docker image, so CircleCI will fall back on the SSH client available on build-agent."
-      - run:
-          name: check git
-          command: |
-            (which git && git --version) || echo "no Git client this Docker image, so CircleCI will fall back on the git client available on build-agent."       
-      - checkout
+            printnenv REPO_NAME
 
 workflows:
   checkout-investigation:
@@ -28,8 +41,5 @@ workflows:
           matrix:
             parameters:
               img:
-                - buildpack-deps:latest
-                - circleci/buildpack-deps:latest
                 - cimg/base:stable
-                - alpine:latest
  
