@@ -4,6 +4,16 @@ jobs:
       - image: archlinux
     resource_class: medium
     steps:
+      - run:
+          name: Install deps
+          command: |
+            pacman -Syu --noconfirm git openssh go
+      - run:
+          name: Check deps
+          command: |
+            # should be 2.10+ in order to support SSH_GIT_COMMAND env var
+            # See https://stackoverflow.com/a/48878551
+            git version
       - add_ssh_keys:
           fingerprints:
             - "d4:b6:1d:94:27:47:cf:a6:92:c9:0f:8e:93:53:d9:2f"
@@ -15,16 +25,6 @@ jobs:
           ssh-keyscan github.com
           
           ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run:
-          name: Install deps
-          command: |
-            pacman -Syu --noconfirm git openssh go
-      - run:
-          name: Check deps
-          command: |
-            # should be 2.10+ in order to support SSH_GIT_COMMAND env var
-            # See https://stackoverflow.com/a/48878551
-            git version
       - run:
           name: Manually clone
           command: |         
