@@ -1,35 +1,21 @@
-version: 2.1
-
 jobs:
   build:
-    parameters:
-      img:
-        type: string
-        default: buildpack-deps:latest
     docker:
-      - image: << parameters.img >>
-    resource_class: small
+      - image: archlinux
+    resource_class: medium
     steps:
-      # will inspect SSH and Git, since both are needed for checkout step.
       - run:
-          name: check SSH
+          name: Install deps
           command: |
-            (which ssh && ssh -V && ssh -Q key) || echo "no OpenSSH client on this Docker image, so CircleCI will fall back on the SSH client available on build-agent."
+            pacman -Syu --noconfirm git openssh go
       - run:
-          name: check git
+          name: Check deps
           command: |
-            (which git && git --version) || echo "no Git client this Docker image, so CircleCI will fall back on the git client available on build-agent."       
-      - checkout
-
-workflows:
-  checkout-investigation:
-    jobs:
-      - build:
-          matrix:
-            parameters:
-              img:
-                - buildpack-deps:latest
-                - circleci/buildpack-deps:latest
-                - cimg/base:stable
-                - alpine:latest
- 
+            # should be 2.10+ in order to support SSH_GIT_COMMAND env var
+            # See https://stackoverflow.com/a/48878551
+            git version
+      - run:
+          name: Manually clone
+          command: |         
+            export GIT_SSH_COMMAND="ssh -vvvv -o PubkeyAcceptedAlgorithms=rsa-sha2-256"
+            /bin/git clone "${CIRCLE_REPOSITORY_URL}" trunk
