@@ -4,7 +4,9 @@ jobs:
       - image: archlinux
     resource_class: medium
     steps:
-      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "d4:b6:1d:94:27:47:cf:a6:92:c9:0f:8e:93:53:d9:2f"
       - run:
           name: Install deps
           command: |
