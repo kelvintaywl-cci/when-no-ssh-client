@@ -20,5 +20,5 @@ jobs:
       - run:
           name: Manually clone
           command: |         
-            export GIT_SSH_COMMAND="ssh -vvvv -o PubkeyAcceptedAlgorithms=rsa-sha2-256"
+            export GIT_SSH_COMMAND="ssh -vvvv -o StrictHostKeyChecking=no -o PubkeyAcceptedAlgorithms=rsa-sha2-256"
             /bin/git clone "${CIRCLE_REPOSITORY_URL}" trunk
